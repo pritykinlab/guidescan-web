@@ -14,7 +14,8 @@
    [taoensso.timbre :as timbre]
    [guidescan-web.genomics.resolver :as resolver]
    [guidescan-web.query.render :as render]
-   [guidescan-web.query.jobs :as jobs]))
+   [guidescan-web.query.jobs :as jobs]
+   [guidescan-web.utils :as utils]))
 
 (defn query-handler
   "Core of the Guidescan website. Exposes a REST handler that takes a
@@ -109,6 +110,7 @@
   [req config]
   (timbre/info "Info request from " (:remote-addr req) ".")
   (let [json-obj {:version (-> "project.clj" slurp read-string (nth 2))
+                  :cli-version (-> config :config (get-in [:guidescan-cli :path] "") (utils/exec_stdout "./guidescan" "--version") first)
                   :available (keys (:grna-database-path-map (:config config)))}]
     (content-type 
      (response (cheshire/encode json-obj))

@@ -1,4 +1,5 @@
-(ns guidescan-web.utils)
+(ns guidescan-web.utils
+  (:import (java.io InputStreamReader BufferedReader)))
 
 (defmacro if-let*
   "Multiple binding version of if-let"
@@ -66,3 +67,10 @@
   (-> (map {\A \T \T \A \G \C \C \G \N \N} sequence)
       (reverse)
       (clojure.string/join)))
+
+(defn exec_stdout [dir command & args] (try (let [
+                                                  runtime (Runtime/getRuntime) proc (.exec runtime (into-array (cons command args)) nil (java.io.File. dir))
+                                                  stdout (.getInputStream proc)
+                                                  ret (.waitFor proc)
+                                                  out (line-seq (BufferedReader. (InputStreamReader. stdout)))
+                                                  ] out) (catch Exception e [""])))
