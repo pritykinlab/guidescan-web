@@ -14,7 +14,8 @@
    [taoensso.timbre :as timbre]
    [guidescan-web.genomics.resolver :as resolver]
    [guidescan-web.query.render :as render]
-   [guidescan-web.query.jobs :as jobs]))
+   [guidescan-web.query.jobs :as jobs]
+   [guidescan-web.utils :as utils]))
 
 (defn query-handler
   "Core of the Guidescan website. Exposes a REST handler that takes a
@@ -96,7 +97,7 @@
      (response (cheshire/encode suggestions))
      (render/get-content-type :json))))
 
-(defn supported-handler
+(defn- _supported-handler
   "Exposes a REST handler that returns the supported organisms and
   enzymes by this endpoint.
 
@@ -106,13 +107,15 @@
   HTTP Response Code: 200 OK
   JSON Response:
   {:supported [{:organism :enzyme}]}"
-  [req config]
-  (timbre/info "Info request from " (:remote-addr req) ".")
+  [config]
   (let [json-obj {:version (if (.exists (clojure.java.io/file "project.clj")) (-> "project.clj" slurp read-string (nth 2)) "")
+                  :cli-version (-> config :config (get-in [:guidescan-cli :path]) (utils/exec "--version") first first)
                   :available (keys (:grna-database-path-map (:config config)))}]
     (content-type 
      (response (cheshire/encode json-obj))
      (render/get-content-type :json))))
+
+(def supported-handler (memoize _supported-handler))
 
 (defn examples-handler
   "Exposes a REST handler that returns example queries for
@@ -142,7 +145,7 @@
    (GET "/info/examples" req
         (examples-handler req config))
    (GET "/info/supported" req
-        (supported-handler req config))
+        (supported-handler config))
    (GET "/info/autocomplete" [organism symbol :as req]
         (autocomplete-handler gene-resolver req organism symbol))
    (route/not-found "404 page not found.")))
