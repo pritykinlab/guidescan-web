@@ -109,7 +109,7 @@
   {:supported [{:organism :enzyme}]}"
   [req config]
   (timbre/info "Info request from " (:remote-addr req) ".")
-  (let [json-obj {:version (-> "project.clj" slurp read-string (nth 2))
+  (let [json-obj {:version (if (.exists (clojure.java.io/file "project.clj")) (-> "project.clj" slurp read-string (nth 2)) "")
                   :cli-version (-> config :config (get-in [:guidescan-cli :path]) (utils/exec "--version") first first)
                   :available (keys (:grna-database-path-map (:config config)))}]
     (content-type 
