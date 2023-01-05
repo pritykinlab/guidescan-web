@@ -117,6 +117,14 @@
 
 (def supported-handler (memoize _supported-handler))
 
+(defn download-handler
+  "Exposes a REST handler that returns supported downloads with other useful metadata."
+  [req config]
+  (let [json-obj (-> config :config (get-in [:download]))]
+    (content-type
+      (response (cheshire/encode json-obj))
+      (render/get-content-type :json))))
+
 (defn examples-handler
   "Exposes a REST handler that returns example queries for
   each organism
@@ -148,6 +156,8 @@
         (supported-handler config))
    (GET "/info/autocomplete" [organism symbol :as req]
         (autocomplete-handler gene-resolver req organism symbol))
+   (GET "/download" req
+     (download-handler req config))
    (route/not-found "404 page not found.")))
 
 (def www-defaults
