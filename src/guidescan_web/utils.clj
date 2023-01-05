@@ -68,9 +68,14 @@
       (reverse)
       (clojure.string/join)))
 
-(defn exec_stdout [dir command & args] (try (let [
-                                                  runtime (Runtime/getRuntime) proc (.exec runtime (into-array (cons command args)) nil (java.io.File. dir))
-                                                  stdout (.getInputStream proc)
-                                                  ret (.waitFor proc)
-                                                  out (line-seq (BufferedReader. (InputStreamReader. stdout)))
-                                                  ] out) (catch Exception e [""])))
+(defn exec
+  [command & args]
+  (try
+    (let [
+          runtime (Runtime/getRuntime) proc (.exec runtime (into-array (cons command args)) nil nil)
+          stdout (.getInputStream proc)
+          stderr (.getErrorStream proc)
+          ret (.waitFor proc)
+          stdout_str (line-seq (BufferedReader. (InputStreamReader. stdout)))
+          stderr_str (line-seq (BufferedReader. (InputStreamReader. stderr)))
+          ] [stdout_str stderr_str ret]) (catch Exception e ["" "" (.toString e)])))
