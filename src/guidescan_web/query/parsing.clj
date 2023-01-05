@@ -133,7 +133,7 @@
   (if-let [[_ chr start-str end-str] (re-find #"^chr(.+)\t.+\t.+\t(\d+)\t(\d+)\t.+\t.+\t.+\t.*" line)]
     (if-let [accession (resolver/resolve-chromosome-name gene-resolver organism chr)]
       (name-region chr [accession (- (Integer/parseInt start-str) 1) (Integer/parseInt end-str)])
-      (f/fail "Failed to resolve chromsome " chr " on line " (+ 1 line-number)))
+      (f/fail "Failed to resolve chromosome " chr " on line " (+ 1 line-number)))
     (if (re-find #"(?i)track(\s|$).*" line)
       :skip
       (f/fail (str "Invalid GTF row: \"" line "\" on line " (+ 1 line-number))))))
@@ -145,7 +145,7 @@
   (if-let [[_ chr start-str end-str] (re-find #"^chr(\S+)\s+(\d+)\s+(\d+)(\s|$).*" line)]
     (if-let [accession (resolver/resolve-chromosome-name gene-resolver organism chr)]
       (name-region chr [accession (Integer/parseInt start-str) (Integer/parseInt end-str)])
-      (f/fail "Failed to resolve chromsome " chr " on line " (+ 1 line-number)))
+      (f/fail "Failed to resolve chromosome " chr " on line " (+ 1 line-number)))
     (if (re-find #"(?i)(track|browser)(\s|$).*" line)
       :skip
       (f/fail (str "Failed to parse: \"" line "\" on line " (+ 1 line-number))))))

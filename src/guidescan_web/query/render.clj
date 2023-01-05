@@ -141,7 +141,7 @@
   (let [type (get-in req [:params :type])
         key (get-in req [:params :key])]
     (if (or (nil? type) (nil? key))
-       (f/fail ":type and :key not found in request parameters.")
+       (render-grnas-for-standard-json-query processed-query)
        (if (= type "all")
            (render-grnas-for-standard-json-query processed-query)
            (render-offtargets-for-standard-json-query key processed-query)))))
