@@ -42,7 +42,7 @@
   [genome entry]
   {:distance (last entry)
    :coords (vec (map #(genome-structure/to-genomic-coordinates genome %)
-                     (drop-last (rest entry))))})
+                     (drop-last (if (= (last entry) 0) (rest entry) entry))))})
 
 (defn- parse-offtarget-info [genome-structure byte-array]
   "Parses the off target info out of a byte array."
