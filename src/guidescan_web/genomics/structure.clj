@@ -24,8 +24,9 @@
   "Converts from absolute coordinates to
   coordinates with respect to one chromosone."
   [genome-structure absolute-coords]
-  (let [direction (if (> absolute-coords 0) :positive :negative) 
-        absolute-coords (Math/abs absolute-coords)
+  (let [direction (if (> absolute-coords 0) :positive :negative)
+        ;; Type hint to Math/abs to avoid bug as in https://clojure.atlassian.net/browse/CLJ-1921
+        absolute-coords (Math/abs ^long absolute-coords)
         abs-genome (:absolute-genome genome-structure)
         genome (:genome genome-structure)
         idx (find-position abs-genome absolute-coords)]
