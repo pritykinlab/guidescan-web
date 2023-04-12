@@ -78,7 +78,9 @@
          (when-let [barray (.getAttribute bam-record "of")]
            {:off-targets (->> barray
                               (parse-offtarget-info genome-structure)
-                              (resolve-accession-names gene-resolver organism))})
+                              (resolve-accession-names gene-resolver organism)
+                              ; Filter out off-targets that don't have an accession name (on contigs/scaffolds)
+                              (filter #(not (nil? (:chromosome %)))))})
          (when-let [d0 (.getAttribute bam-record "k0")]
            {:distance-0-off-targets d0})
          (when-let [d1 (.getAttribute bam-record "k1")]
