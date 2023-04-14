@@ -86,10 +86,17 @@
   converting each region into two when
   we are in flanking mode."
   [genomic-regions organism flanking]
-  (cond->> genomic-regions
-    flanking       (map #(split-region-flanking % flanking))
-    flanking       (apply concat)
-    true           (map #(assoc % :organism organism))))
+  (let [genomic-regions
+        (cond->> genomic-regions
+                 flanking (map #(split-region-flanking % flanking))
+                 flanking (apply concat)
+                 true (map #(assoc % :organism organism)))
+        genomic-regions-size
+        (reduce + (map #(- (last (:coords %)) (second (:coords %))) genomic-regions))]
+    (if (> genomic-regions-size 1e7)
+      (f/fail "Parsed genomic regions length exceeds 10M, the maximum allowed.")
+      genomic-regions)
+    ))
 
 (defn- wrap-result
   [query-type result]
