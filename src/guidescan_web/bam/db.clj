@@ -67,7 +67,8 @@
                                
 (defn- parse-query-result
   [genome-structure gene-resolver organism bam-record]
-  (merge {:sequence (.getReadString bam-record)
+  (merge {:organism organism
+          :sequence (.getReadString bam-record)
           :start (.getAlignmentStart bam-record)
           :end (.getAlignmentEnd bam-record)
           :direction (if (.getReadNegativeStrandFlag bam-record) :negative :positive)}
