@@ -98,11 +98,15 @@
   (map-indexed #(grna-to-csv-vector genomic-region %2 %1) grnas))
 
 (defn grna-to-bed-line
+  "BED files are 0-indexed, start-inclusive and end-exclusive.
+  We transform grna coordinates (1-indexed, start-inclusive, end-inclusive),
+  by subtracting 1 from :start, and leaving :end untouched.
+  Note that :start <= :end for grna coordinates no matter the direction."
   [chr grna]
   (let [[direction start end]
         (if (= (:direction grna) :positive)
-          ["+" (:start grna) (:end grna)]
-          ["-" (dec (:start grna)) (dec (:end grna))])
+          ["+" (dec (:start grna)) (:end grna)]
+          ["-" (dec (:start grna)) (:end grna)])
         name (str chr ":" (:start grna) "-" (:end grna))]
     (clojure.string/join
      "\t"

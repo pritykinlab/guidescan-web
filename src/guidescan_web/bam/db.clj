@@ -66,11 +66,12 @@
    off-targets))
                                
 (defn- parse-query-result
-  [genome-structure gene-resolver organism bam-record]
-  (merge {:organism organism
+  [genome-structure gene-resolver organism enzyme bam-record]
+  (let [pos-offset (config/get-grna-db-pos-offset (:config gene-resolver) organism enzyme)]
+    (merge {:organism organism
           :sequence (.getReadString bam-record)
-          :start (.getAlignmentStart bam-record)
-          :end (.getAlignmentEnd bam-record)
+          :start (+ (.getAlignmentStart bam-record) pos-offset)
+          :end (+ (.getAlignmentEnd bam-record) pos-offset)
           :direction (if (.getReadNegativeStrandFlag bam-record) :negative :positive)}
          (when-let [cutting-efficiency (.getAttribute bam-record "ds")]
            {:cutting-efficiency cutting-efficiency})
@@ -91,7 +92,7 @@
          (when-let [d3 (.getAttribute bam-record "k3")]
            {:distance-3-off-targets d3})
          (when-let [d4 (.getAttribute bam-record "k4")]
-           {:distance-4-off-targets d4})))
+           {:distance-4-off-targets d4}))))
 
 (defn- load-bam-reader
   [file]
@@ -146,6 +147,6 @@
                  iterator (.query bam-reader chromosome start-pos end-pos
                                   false)]
        (let [bam-records (doall (iterator-seq iterator))]
-         (vec (map #(parse-query-result genome-structure gene-resolver organism %) bam-records))))
+         (vec (map #(parse-query-result genome-structure gene-resolver organism enzyme %) bam-records))))
      (catch java.lang.IllegalArgumentException _
        (f/fail (str "Invalid chromosome \"" chromosome "\" for organism."))))))
