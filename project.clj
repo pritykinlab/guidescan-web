@@ -1,4 +1,4 @@
-(defproject guidescan-web "2.0.5"
+(defproject guidescan-web "2.0.6"
   :description "Version 2.0 of the Guidescan website."
   :url "http://guidescan.com/"
   :author "Henri Schmidt"

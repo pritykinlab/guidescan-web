@@ -2,6 +2,14 @@
  :available-cas-enzymes ["cas9"]
  :grna-database-path-prefix "/home/schmidt73/Desktop/guidescan-web/"
  :grna-database-path-map {{:organism "ce11" :enzyme "cas9"} "ce11.bam.sorted"}
+ ; The POS SAM field in some legacy grna dbs was 0-indexed instead of 1-indexed
+ ; (which is the normal behavior). This key specifies the organism/enzyme combination
+ ; with the offset that must be added to the observed POS field to get the
+ ; "true" alignment position.
+ :grna-database-offset-map  {{:organism "hg38" :enzyme "cas9"} 1
+                             {:organism "ce11" :enzyme "cpf1"} 1
+                             {:organism "hg38" :enzyme "cpf1"} 1
+                             {:organism "mm10" :enzyme "cpf1"} 1}
  :sequence-resolvers {"ce11" {:url "http://localhost:4500"}}
  :logfile "test.txt"
  :examples {"coords" {"ce11" {"cas9" "chrIV:1100-45001"}}

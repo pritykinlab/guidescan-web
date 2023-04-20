@@ -33,3 +33,11 @@
        (contains? (:grna-database-path-map (:config config))
                   {:organism organism
                    :enzyme enzyme})))
+
+(defn get-grna-db-pos-offset
+  "Returns the offset that must be added to the observed
+  position of an alignment to get the true position."
+  [config organism enzyme]
+      (get (:grna-database-offset-map  (:config config))
+           {:organism organism
+            :enzyme enzyme} 0))
